@@ -1,7 +1,7 @@
 #first file in repo
 #open .nc file 
 import netCDF4 as nc
-fn = '/Users/ryanfriess/Desktop/solarcar/cloud-cover/nc-files/file1.nc'
+fn = '/Users/ryanfriess/Desktop/solarcar/cloud-proj/Weather-Prediction-Model/nc-files/file1.nc'
 ds = nc.Dataset(fn)
 
 def process_array(mask_array):
@@ -14,15 +14,18 @@ def process_array(mask_array):
 
 def write_to_file(fn, img):
     height, width = str(len(img)), str(len(img[0]))
-    fwith open("/output-files/"+fn, 'w') as f:
+    with open("/Users/ryanfriess/Desktop/solarcar/cloud-proj/Weather-Prediction-Model/output-files/"+fn, 'w') as f:
         f.write("P3\n")
         f.write(width + " " + height +"\n")
         f.write("255\n")  # Maximum color value
 
         # Write pixel data
-        for r in range(len(img)):x
-            f.write(f"{r} {g} {b} ")
-        f.write("\n")
+        for r in range(len(img)):
+            for c in range(len(img[0])):
+                gv = img[r][c]
+                if gv == "--": gv = 255
+                f.write(f"{gv} {gv} {gv} ")
+            f.write("\n")
 
 # Access the Cloud_Mask variable
 cloud_mask = ds.groups['geophysical_data'].variables['Cloud_Mask'][:]
@@ -34,6 +37,8 @@ for i in range(len(cloud_mask)):
     mask_array = cloud_mask[i]
     # print(mask_array[0][0])
     processed = process_array(mask_array)
+    fn = "file" + str(i) + ".ppm"
+    write_to_file(fn, processed)
 
 
 
